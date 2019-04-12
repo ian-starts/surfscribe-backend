@@ -7,8 +7,8 @@ steps:
     args:
       - 'set'
       - 'image'
-      - 'surfscribe-pod '
-      - 'surfscribe-container=rgcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
+      - 'surfscribe-pod'
+      - 'surfscribe-container=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
