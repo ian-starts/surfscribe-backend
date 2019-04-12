@@ -1,6 +1,11 @@
 steps:
-  - name: 'docker/compose:1.24.0'
-    args: ['up', '-d']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'workspace_app:latest', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
-images: ['gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
+    args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
+    timeout: 500s
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['run', 'surfscribe-pod', '--image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '--port', '443', '--port', '80']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=eu-west1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
