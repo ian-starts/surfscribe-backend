@@ -1,6 +1,6 @@
 steps:
-  - name: 'docker/compose:latest'
+  - name: 'docker/compose'
     args: ['-f', 'production.yml','up', '-d', 'db', 'cache']
-  - name: 'docker/compose:latest'
+  - name: 'gcr.io/cloud-builders/docker'
     args: ['tag', 'surfscribe_backend:latest', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
 images: ['gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
