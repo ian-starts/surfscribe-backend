@@ -15,6 +15,6 @@ class ForecastsController extends BaseController
             $repository->getBySlugAsync(
                 Location::query()->where('slug', '=', $id)->firstOrFail()->msw_wave_break_slug
             )->wait()
-        )->setTtl(40);
+        )->setTtl(3600);
     }
 }

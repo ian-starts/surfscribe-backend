@@ -1,0 +1,43 @@
+version: '3.4'
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_ENV: production
+        APP_VERSION: production
+    container_name: surfscribe-production
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - sessions:/web/storage/framework/sessions
+      - certificates:/certificates
+    environment:
+      # LETSENCRYPT_DOMAINS: 'etbone.com'
+      QUEUE_DRIVER: sync
+      APP_KEY: wdcyyCLakhroLIpGqpXqRcKERpQUkusX
+      APP_TIMEZONE: UTC
+      DB_HOST: mysql-surfscribe-production
+      DB_PASSWORD: DUtpZafwkTiSFwfWKtEQFpUbObGAyVXU
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    container_name: mysql-surfscribe-production
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: forge
+      MYSQL_USER: forge
+      MYSQL_PASSWORD: DUtpZafwkTiSFwfWKtEQFpUbObGAyVXU
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+
+volumes:
+  mysql-data:
+  sessions:
+  certificates:

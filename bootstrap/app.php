@@ -57,13 +57,6 @@ $app->singleton(
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
-
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
 $app->routeMiddleware(['jwt.auth' => \App\Http\Middleware\JwtMiddleware::class]);
 $app->routeMiddleware(['cache' => \Barryvdh\HttpCache\Middleware\CacheRequests::class]);
 /*
@@ -78,9 +71,6 @@ $app->routeMiddleware(['cache' => \Barryvdh\HttpCache\Middleware\CacheRequests::
 */
 $app->register(\IanKok\MSWSDK\MSWSDKServiceProvider::class);
 $app->register(\Barryvdh\HttpCache\ServiceProvider::class);
-// $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
