@@ -7,7 +7,6 @@ steps:
     args:
       - 'set'
       - 'image'
-      - 'deployment'
       - 'deployment/surfscribe-deploy'
       - 'surfscribe-container=rgcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
     env:
