@@ -10,7 +10,7 @@ steps:
       - 'set'
       - 'image'
       - 'deployment/surfscribe-pod'
-      - 'surfscribe-pod=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
+      - 'surfscribe-pod=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
