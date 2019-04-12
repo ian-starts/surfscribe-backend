@@ -1,0 +1,39 @@
+version: '3.4'
+services:
+  app:
+    image: dutchandbold/laravel-docker
+    container_name: surfscribe-local
+    ports:
+      - '443:443'
+    volumes:
+      - ./.ssl:/config/ssl
+      - ./:/web:cached
+    environment:
+      TZ: 'Europe/Amsterdam'
+      APP_ENV: 'local'
+      DB_HOST: surfscribe-mysql-local
+      XDEBUG_REMOTE_ENABLE: 1
+      XDEBUG_REMOTE_AUTOSTART: 1
+      XDEBUG_REMOTE_HOST: localhost
+      XDEBUG_REMOTE_PORT: 9001
+      XDEBUG_PROFILER_ENABLE: 0
+      NGINX_ASSETS_EXPIRE_IN: 'off'
+      NGINX_LISTEN: '443 default_server'
+      NGINX_SSL: 'on'
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    container_name: surfscribe-mysql-local
+    ports:
+      - "3306:3306"
+    volumes:
+        - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'surfscribe'
+      MYSQL_ROOT_PASSWORD: 'root'
+
+volumes:
+  mysql-data:
