@@ -6,6 +6,8 @@ steps:
     args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['run', 'surfscribe-pod', '--image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '--port', '443', '--port', '80']
+  - name: 'gcr.io/cloud-builders/kubectl'
+      args: ['expose', 'deployment', 'surfscribe-pod', '--type', 'LoadBalancer', '--port', '80', '--target-port', '80', '--port', '443', '--target-port', '443']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
