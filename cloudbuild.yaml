@@ -1,4 +1,6 @@
 steps:
+  - name: 'gcr.io/$PROJECT_ID/composer'
+    args: ['install']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
   - name: 'gcr.io/cloud-builders/docker'
@@ -7,8 +9,8 @@ steps:
     args:
       - 'set'
       - 'image'
-      - 'surfscribe-pod'
-      - 'surfscribe-container=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
+      - 'deployment/surfscribe-pod'
+      - 'surfscribe-pod=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
