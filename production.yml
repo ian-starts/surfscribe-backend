@@ -7,9 +7,6 @@ services:
         APP_ENV: production
         APP_VERSION: production
     container_name: surfscribe-production
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       - sessions:/web/storage/framework/sessions
       - certificates:/certificates
