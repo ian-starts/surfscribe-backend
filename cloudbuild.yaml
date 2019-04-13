@@ -10,6 +10,7 @@ steps:
     name: 'gcr.io/cloudsql-docker/gce-proxy'
     entrypoint: 'sh'
     args:
+      - '-c'
       - '/cloud_sql_proxy -dir=/cloudsql -instances=surfscribe:europe-west1:surfscribe=tcp:3306 & while [ ! -f /cloudsql/stop ]; do sleep 2; done'
     waitFor: ['-']
     timeout: '1200s'
