@@ -1,5 +1,6 @@
 steps:
   - name: 'gcr.io/$PROJECT_ID/composer'
+    id: 'install'
     args: ['install']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
