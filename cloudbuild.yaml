@@ -3,8 +3,10 @@ steps:
     id: 'install'
     args: ['install']
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'build docker image'
     args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'push docker image'
     args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
   - id: 'proxy'
     name: 'gcr.io/cloudsql-docker/gce-proxy'
@@ -26,9 +28,10 @@ steps:
     timeout: '1200s'
     waitFor: ['install']
     volumes:
-      - name: db
-        path: /cloudsql
+      - name: 'db'
+        path: '/cloudsql'
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'deploy to kubernetes'
     args:
       - 'set'
       - 'image'
