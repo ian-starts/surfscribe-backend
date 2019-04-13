@@ -25,6 +25,4 @@ COPY --chown=www-data ./server/nginx-default.conf /config/
 
 RUN rm -f /web/.env.*
 
-RUN php artisan migrate --force
-
 USER root
