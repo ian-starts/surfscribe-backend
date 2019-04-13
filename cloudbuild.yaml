@@ -5,27 +5,34 @@ steps:
     args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
+  - id: 'proxy'
+    name: 'gcr.io/cloudsql-docker/gce-proxy'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - '/cloud_sql_proxy -dir=/cloudsql -instances=surfscribe:europe-west1:surfscribe=tcp:3306 -credential_file=/secrets/cloudsql/credentials.json & while [ ! -f /cloudsql/stop ]; do sleep 2; done'
+    waitFor: ['-']
+    timeout: '1200s'
+    volumes:
+      - name: 'db'
+        path: '/cloudsql'
+  - id: 'migrate'
+    name: 'php'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'php artisan migrate --force && touch /cloudsql/stop'
+    timeout: '1200s'
+    waitFor: ['install']
+    volumes:
+      - name: db
+        path: /cloudsql
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'set'
       - 'image'
       - 'deployment/surfscribe-pod'
       - 'surfscribe-pod=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-      - 'exec'
-      - '-it'
-      - 'deployment/surfscribe-pod'
-      - '--container'
-      - 'surfscribe-pod'
-      - '--'
-      - 'php'
-      - 'artisan'
-      - 'migrate'
-      - '--force'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
