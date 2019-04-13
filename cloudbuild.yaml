@@ -19,6 +19,7 @@ steps:
     entrypoint: 'sh'
     args:
       - '-c'
+      - '-p 3306:3306'
       - 'php artisan migrate --no-interaction --force && touch /cloudsql/stop'
     timeout: '1200s'
     waitFor: ['install']
