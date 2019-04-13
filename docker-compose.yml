@@ -34,6 +34,5 @@ services:
     environment:
       MYSQL_DATABASE: 'surfscribe'
       MYSQL_ROOT_PASSWORD: 'root'
-
 volumes:
   mysql-data:
