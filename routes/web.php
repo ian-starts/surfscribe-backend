@@ -23,11 +23,12 @@ $router->group(['prefix' => 'api', 'middleware' =>'cache'], function () use ($ro
 
 
 $router->group(['middleware' => 'jwt.auth', 'prefix'=>'api'], function () use ($router) {
-    $router->get('/', function () {
-        // Uses Auth Middleware
-    });
+    $router->post('notifications', 'Notifications\NotificationsController@add');
+    $router->put('notifications/{uuid}', 'Notifications\NotificationsController@edit');
+    $router->get('notifications', 'Notifications\NotificationsController@get');
+    $router->delete('notifications/{uuid}', 'Notifications\NotificationsController@delete');
 
-    $router->get('user/profile', function () {
-        // Uses Auth Middleware
+    $router->get('user', function ($request) {
+        return response()->json($request->auth);
     });
 });
