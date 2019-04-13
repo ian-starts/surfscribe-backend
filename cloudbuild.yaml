@@ -18,7 +18,7 @@ steps:
       - name: 'db'
         path: '/cloudsql'
   - id: 'migrate'
-    name: 'php'
+    name: 'urbit/lumen-php-fpm'
     entrypoint: 'sh'
     args:
       - '-c'
