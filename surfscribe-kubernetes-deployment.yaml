@@ -1,146 +1,101 @@
-apiVersion: v1
-kind: Pod
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   annotations:
-    kubernetes.io/limit-ranger: 'LimitRanger plugin set: cpu request for container
-      surfscribe-pod; cpu request for container cloudsql-proxy'
-  creationTimestamp: 2019-04-13T03:42:39Z
-  generateName: surfscribe-pod-75f86f7855-
+    deployment.kubernetes.io/revision: "9"
+  creationTimestamp: 2019-04-12T13:48:44Z
+  generation: 9
   labels:
-    pod-template-hash: "3194293411"
     run: surfscribe-pod
-  name: surfscribe-pod-75f86f7855-x2n7n
+  name: surfscribe-pod
   namespace: default
-  ownerReferences:
-  - apiVersion: apps/v1
-    blockOwnerDeletion: true
-    controller: true
-    kind: ReplicaSet
-    name: surfscribe-pod-75f86f7855
-    uid: 2fb159a0-5d9e-11e9-8f0e-42010a84000f
-  resourceVersion: "127018"
-  selfLink: /api/v1/namespaces/default/pods/surfscribe-pod-75f86f7855-x2n7n
-  uid: 2fb6b6ae-5d9e-11e9-8f0e-42010a84000f
+  resourceVersion: "131154"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/surfscribe-pod
+  uid: b09f06da-5d29-11e9-8f0e-42010a84000f
 spec:
-  containers:
-  - env:
-    - name: DB_USERNAME
-      valueFrom:
-        secretKeyRef:
-          key: username
-          name: cloudsql-db-credentials
-    - name: DB_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          key: password
-          name: cloudsql-db-credentials
-    - name: DB_DATABASE
-      valueFrom:
-        secretKeyRef:
-          key: dbname
-          name: cloudsql-db-credentials
-    image: gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:0a75d019eeaf955eaee4ab65f682f51f651fb9fe
-    imagePullPolicy: IfNotPresent
-    name: surfscribe-pod
-    ports:
-    - containerPort: 80
-      protocol: TCP
-    resources:
-      requests:
-        cpu: 100m
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-jbngd
-      readOnly: true
-  - command:
-    - /cloud_sql_proxy
-    - -instances=surfscribe=tcp:3306
-    - -credential_file=/secrets/cloudsql/credentials.json
-    image: gcr.io/cloudsql-docker/gce-proxy:1.11
-    imagePullPolicy: IfNotPresent
-    name: cloudsql-proxy
-    resources:
-      requests:
-        cpu: 100m
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /secrets/cloudsql
-      name: surfscribe-secrets-volume
-      readOnly: true
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-jbngd
-      readOnly: true
-  dnsPolicy: ClusterFirst
-  nodeName: gke-surfscribe-cluster-default-pool-8fb8528f-tdgd
-  priority: 0
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext: {}
-  serviceAccount: default
-  serviceAccountName: default
-  terminationGracePeriodSeconds: 30
-  tolerations:
-  - effect: NoExecute
-    key: node.kubernetes.io/not-ready
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoExecute
-    key: node.kubernetes.io/unreachable
-    operator: Exists
-    tolerationSeconds: 300
-  volumes:
-  - name: surfscribe-secrets-volume
-    secret:
-      defaultMode: 420
-      secretName: cloudsql-instance-credentials
-  - name: default-token-jbngd
-    secret:
-      defaultMode: 420
-      secretName: default-token-jbngd
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      run: surfscribe-pod
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: surfscribe-pod
+    spec:
+      containers:
+      - env:
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: cloudsql-db-credentials
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: cloudsql-db-credentials
+        - name: DB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: dbname
+              name: cloudsql-db-credentials
+        image: gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:a3944988479b44a6f1ad35c72b1562e31b45356f
+        imagePullPolicy: IfNotPresent
+        name: surfscribe-pod
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - command:
+        - /cloud_sql_proxy
+        - -instances=surfscribe:europe-west1:surfscribe=tcp:3306
+        - -credential_file=/secrets/cloudsql/credentials.json
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        imagePullPolicy: IfNotPresent
+        name: cloudsql-proxy
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /secrets/cloudsql
+          name: surfscribe-secrets-volume
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: surfscribe-secrets-volume
+        secret:
+          defaultMode: 420
+          secretName: cloudsql-instance-credentials
 status:
+  availableReplicas: 1
   conditions:
-  - lastProbeTime: null
-    lastTransitionTime: 2019-04-13T03:42:39Z
+  - lastTransitionTime: 2019-04-12T13:49:21Z
+    lastUpdateTime: 2019-04-12T13:49:21Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
     status: "True"
-    type: Initialized
-  - lastProbeTime: null
-    lastTransitionTime: 2019-04-13T03:42:46Z
+    type: Available
+  - lastTransitionTime: 2019-04-12T13:48:44Z
+    lastUpdateTime: 2019-04-13T04:10:25Z
+    message: ReplicaSet "surfscribe-pod-68f5ccb966" has successfully progressed.
+    reason: NewReplicaSetAvailable
     status: "True"
-    type: Ready
-  - lastProbeTime: null
-    lastTransitionTime: null
-    status: "True"
-    type: ContainersReady
-  - lastProbeTime: null
-    lastTransitionTime: 2019-04-13T03:42:39Z
-    status: "True"
-    type: PodScheduled
-  containerStatuses:
-  - containerID: docker://fc65e1424e694f1d5d07b7c00bb93434d0f394b30eb3d75e18c1fa1d3af52b41
-    image: gcr.io/cloudsql-docker/gce-proxy:1.11
-    imageID: docker-pullable://gcr.io/cloudsql-docker/gce-proxy@sha256:5c690349ad8041e8b21eaa63cb078cf13188568e0bfac3b5a914da3483079e2b
-    lastState: {}
-    name: cloudsql-proxy
-    ready: true
-    restartCount: 0
-    state:
-      running:
-        startedAt: 2019-04-13T03:42:46Z
-  - containerID: docker://348e84ccc060fa1ceee6295375866444918b87083d802d657710a725a7776e5f
-    image: gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:0a75d019eeaf955eaee4ab65f682f51f651fb9fe
-    imageID: docker-pullable://gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend@sha256:1546ae951037d3dfde89e8776d8e4b3ca00d971f3c0bafc1e06703290b8763b0
-    lastState: {}
-    name: surfscribe-pod
-    ready: true
-    restartCount: 0
-    state:
-      running:
-        startedAt: 2019-04-13T03:42:44Z
-  hostIP: 10.132.0.3
-  phase: Running
-  podIP: 10.36.2.19
-  qosClass: Burstable
-  startTime: 2019-04-13T03:42:39Z
+    type: Progressing
+  observedGeneration: 9
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
