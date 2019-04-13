@@ -3,29 +3,6 @@ steps:
     id: 'install'
     args: ['install']
     waitFor: ['-']
-  - id: 'proxy'
-    name: 'gcr.io/cloudsql-docker/gce-proxy'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - '/cloud_sql_proxy -dir=/cloudsql -instances=surfscribe:europe-west1:surfscribe=tcp:127.0.0.1:3306 & while [ ! -f /cloudsql/stop ]; do sleep 2; done'
-    waitFor: ['-']
-    timeout: '1200s'
-    volumes:
-      - name: 'db'
-        path: '/cloudsql'
-  - id: 'migrate'
-    name: 'urbit/lumen-php-fpm'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - '-p 3306:3306'
-      - 'php artisan migrate --no-interaction --force && touch /cloudsql/stop'
-    timeout: '1200s'
-    waitFor: ['install']
-    volumes:
-      - name: 'db'
-        path: '/cloudsql'
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build docker image'
     args: ['build', '-t', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA', '.']
@@ -42,4 +19,3 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
-timeout: '1200s'
