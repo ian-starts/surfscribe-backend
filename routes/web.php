@@ -29,6 +29,6 @@ $router->group(['middleware' => 'jwt.auth', 'prefix'=>'api'], function () use ($
     $router->delete('notifications/{uuid}', 'Notifications\NotificationsController@delete');
 
     $router->get('user', function ($request) {
-        return response()->json($request->auth);
+        return (new CamelCaseJsonResponseFactory)->json($request->auth);
     });
 });

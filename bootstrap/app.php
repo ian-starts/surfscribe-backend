@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
     dirname(__DIR__)
@@ -21,9 +21,14 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
- $app->withFacades();
+$app->withFacades();
 
- $app->withEloquent();
+$app->withEloquent();
+
+$app->configure('mail');
+$app->alias('mailer', Illuminate\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -69,8 +74,10 @@ $app->routeMiddleware(['cache' => \Barryvdh\HttpCache\Middleware\CacheRequests::
 | totally optional, so you are not required to uncomment this line.
 |
 */
+//$app->register(\App\Providers\AppServiceProvider::class);
 $app->register(\IanKok\MSWSDK\MSWSDKServiceProvider::class);
 $app->register(\Barryvdh\HttpCache\ServiceProvider::class);
+$app->register(\Illuminate\Mail\MailServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -83,10 +90,13 @@ $app->register(\Barryvdh\HttpCache\ServiceProvider::class);
 |
 */
 
-$app->router->group([
-    'namespace' => 'App\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
-});
+$app->router->group(
+    [
+        'namespace' => 'App\Http\Controllers',
+    ],
+    function ($router) {
+        require __DIR__ . '/../routes/web.php';
+    }
+);
 
 return $app;

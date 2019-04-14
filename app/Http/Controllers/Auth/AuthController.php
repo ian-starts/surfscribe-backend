@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Factories\CamelCaseJsonResponseFactory;
 use App\User;
 use Illuminate\Http\Request;
 use Firebase\JWT\JWT;
@@ -54,7 +55,7 @@ class AuthController extends BaseController
             // to make sure that you have the same response format for
             // differents kind of responses. But let's return the
             // below respose for now.
-            return response()->json(
+            return (new CamelCaseJsonResponseFactory())->json(
                 [
                     'error' => 'Email does not exist.'
                 ],
@@ -63,7 +64,7 @@ class AuthController extends BaseController
         }
         // Verify the password and generate the token
         if (Hash::check($request->input('password'), $user->password)) {
-            return response()->json(
+            return (new CamelCaseJsonResponseFactory)->json(
                 [
                     'token' => $this->jwt($user)
                 ],
@@ -71,7 +72,7 @@ class AuthController extends BaseController
             );
         }
         // Bad Request response
-        return response()->json(
+        return (new CamelCaseJsonResponseFactory)->json(
             [
                 'error' => 'Email or password is wrong.'
             ],
@@ -98,7 +99,7 @@ class AuthController extends BaseController
                 'password' => Hash::make($request->get('password')),
             ]
         );
-        return response()->json(
+        return (new CamelCaseJsonResponseFactory)->json(
             [
                 'token' => $this->jwt($user)
             ],

@@ -18,18 +18,18 @@ class JwtMiddleware
         $token = explode('Bearer ',$request->header('authorization'))[1];
         if(!$token) {
             // Unauthorized response if token not there
-            return response()->json([
+            return (new CamelCaseJsonResponseFactory)->json([
                                         'error' => 'Token not provided.'
                                     ], 401);
         }
         try {
             $credentials = JWT::decode($token, env('JWT_SECRET'), ['HS256']);
         } catch(ExpiredException $e) {
-            return response()->json([
+            return (new CamelCaseJsonResponseFactory)->json([
                                         'error' => 'Provided token is expired.'
                                     ], 400);
         } catch(Exception $e) {
-            return response()->json([
+            return (new CamelCaseJsonResponseFactory)->json([
                                         'error' => 'An error while decoding token.'
                                     ], 400);
         }

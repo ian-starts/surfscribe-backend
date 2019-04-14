@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Notifications;
 
 
+use App\Factories\CamelCaseJsonResponseFactory;
 use App\Location;
 use App\Notification;
 use Illuminate\Database\QueryException;
@@ -57,9 +58,9 @@ class NotificationsController extends BaseController
         try {
             $notification->save();
         } catch (QueryException $e) {
-            return response()->json(['succes' => false, 'message' => 'duplicate entry'], 400);
+            return (new CamelCaseJsonResponseFactory())->json(['succes' => false, 'message' => 'duplicate entry'], 400);
         }
-        return response()->json(['succes' => true, 'uuid' => $notification->uuid->string], 201);
+        return (new CamelCaseJsonResponseFactory)->json(['succes' => true, 'uuid' => $notification->uuid->string], 201);
     }
 
     public function get(Request $request)
@@ -78,7 +79,9 @@ class NotificationsController extends BaseController
 
     public function edit($uuid, Notification $notification, Request $request)
     {
-        $notification = $notification->newQuery()->where([['uuid', '=', $uuid],['user_id', '=', $request->auth->id]])->firstOrFail();
+        $notification = $notification->newQuery()->where(
+            [['uuid', '=', $uuid], ['user_id', '=', $request->auth->id]]
+        )->firstOrFail();
         $this->validate(
             $request,
             [
@@ -94,7 +97,7 @@ class NotificationsController extends BaseController
                 'swell.period.max'                => 'required',
             ]
         );
-        $requestData  = $request->all();
+        $requestData = $request->all();
         $notification->fill(
             [
                 'wind_direction'             => $requestData['wind']['direction']['direction_string'],
@@ -112,15 +115,17 @@ class NotificationsController extends BaseController
         try {
             $notification->save();
         } catch (QueryException $e) {
-            return response()->json(['succes' => false, 'message' => 'Database error'], 400);
+            return (new CamelCaseJsonResponseFactory)->json(['succes' => false, 'message' => 'Database error'], 400);
         }
-        return response()->json(['succes' => true, 'uuid' => $notification->uuid], 200);
+        return (new CamelCaseJsonResponseFactory)->json(['succes' => true, 'uuid' => $notification->uuid], 200);
     }
 
     public function delete($uuid, Notification $notification, Request $request)
     {
-        $notification = $notification->newQuery()->where([['uuid', '=', $uuid],['user_id', '=', $request->auth->id]])->firstOrFail();
+        $notification = $notification->newQuery()->where(
+            [['uuid', '=', $uuid], ['user_id', '=', $request->auth->id]]
+        )->firstOrFail();
         $notification->forceDelete();
-        return response()->json(['succes' => true], 200);
+        return (new CamelCaseJsonResponseFactory)->json(['succes' => true], 200);
     }
 }

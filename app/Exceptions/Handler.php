@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Factories\CamelCaseJsonResponseFactory;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -28,7 +30,8 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception  $exception
+     * @param  \Exception $exception
+     *
      * @return void
      */
     public function report(Exception $exception)
@@ -39,12 +42,27 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception               $exception
+     *
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        $parentRender = parent::render($request, $exception);
+
+        // if parent returns a JsonResponse
+        // for example in case of a ValidationException
+        if ($parentRender instanceof JsonResponse) {
+            return $parentRender;
+        }
+        return (new CamelCaseJsonResponseFactory())->json(
+            [
+                'message' => $exception instanceof HttpException || $exception instanceof ModelNotFoundException
+                    ? $exception->getMessage()
+                    : 'Server Error',
+            ],
+            $parentRender->status()
+        );
     }
 }

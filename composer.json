@@ -10,6 +10,7 @@
         "firebase/php-jwt": "^5.0",
         "iankok/msw-sdk": "^1.0",
         "iankok/surf-forecast-api-client": "^1.0",
+        "illuminate/mail": "^5.8",
         "laravel/lumen-framework": "5.8.*",
         "vlucas/phpdotenv": "^3.3",
         "webpatser/laravel-uuid": "2.*"

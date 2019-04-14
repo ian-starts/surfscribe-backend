@@ -20,8 +20,19 @@ class Location extends Model
 
     protected $table = 'locations';
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function images()
     {
         return $this->hasMany(Image::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }
