@@ -18,7 +18,7 @@ docker exec -it surfscribe-local composer install
 ```
 * run `php artisan migrate` or 
 ```bash
-docker exec -it surfscribe-local php artian migrate 
+docker exec -it surfscribe-local php artisan migrate 
 ```
 
 go to http://localhost to see if it's running.
