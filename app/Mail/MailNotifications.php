@@ -10,7 +10,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MailShortTimeNotifications extends Mailable
+class MailNotifications extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -54,7 +54,7 @@ class MailShortTimeNotifications extends Mailable
     {
         return $this->from('notifications@surfscribe.com', 'Surf Sniper')
             ->subject($this->subject)
-            ->view('emails.notificationshorttime')
+            ->view('emails.notification')
             ->with(
                 [
                     'locations' => $this->locations,

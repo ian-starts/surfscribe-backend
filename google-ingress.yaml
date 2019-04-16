@@ -4,5 +4,5 @@ metadata:
   name: surfscribe-ingress
 spec:
   backend:
-    serviceName: surfscribe-pod-service
+    serviceName: surfscribe-pod
     servicePort: 80

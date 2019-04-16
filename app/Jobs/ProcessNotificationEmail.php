@@ -5,12 +5,11 @@ namespace App\Jobs;
 
 
 use App\Location;
-use App\Mail\MailLongTimeNotifications;
-use App\Mail\MailShortTimeNotifications;
+use App\Mail\MailNotifications;
 use App\User;
 use Illuminate\Support\Facades\Mail;
 
-class ProcessNotificationShortTimeEmail extends Job
+class ProcessNotificationEmail extends Job
 {
     /**
      * @var User
@@ -28,16 +27,17 @@ class ProcessNotificationShortTimeEmail extends Job
      * @param User             $user
      * @param Location[]|array $locations
      */
-    public function __construct(User $user, array $locations)
+    public function __construct(User $user, $locations)
     {
         $this->user      = $user;
         $this->locations = $locations;
     }
 
+
     public function handle()
     {
-        Mail::to($this->user->email)->send(
-            new MailShortTimeNotifications($this->user, $this->locations, 'It\'s go time tomorrow!')
+        Mail::to('hello@yonikok.com')->send(
+            new MailNotifications($this->user, $this->locations, 'The weather is looking good these days!')
         );
     }
 

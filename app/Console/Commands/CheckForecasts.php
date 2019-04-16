@@ -4,11 +4,14 @@
 namespace App\Console\Commands;
 
 
+use App\Jobs\ProcessNotificationEmail;
 use App\Location;
+use App\Notification;
 use App\Repositories\ForecastRepositoryAdapter;
 use App\User;
 use IanKok\MSWSDK\Forecasts\ForecastRepository;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class CheckForecasts extends Command
@@ -41,8 +44,8 @@ class CheckForecasts extends Command
      */
     public function handle(ForecastRepositoryAdapter $repository)
     {
-        $locations     = Location::query()->whereHas('notifications', null)->get();
-        $notifications = $locations->map(
+        $locations       = Location::query()->whereHas('notifications', null)->get();
+        $notifications   = $locations->map(
             function ($location) use ($repository) {
                 $forecasts               = $repository->getBySlugAsync($location->msw_wave_break_slug)->wait();
                 $location->notifications = $location->notifications->filter(
@@ -63,7 +66,36 @@ class CheckForecasts extends Command
             },
             new Collection()
         );
-
-        //$users = User::query()->whereHas('notifications', function ());
+        $notificationIds = $notifications->map(
+            function ($notification) {
+                return $notification->id;
+            }
+        );
+        $users           = User::query()->whereHas(
+            'notifications',
+            function (Builder $q) use ($notificationIds) {
+                $q->whereIn('id', $notificationIds);
+            }
+        )->get()->map(
+            function (User $user) use ($notifications) {
+                $user->notifications = $notifications->filter(
+                    function (Notification $notification) use ($user) {
+                        return $notification->user_id === $user->id;
+                    }
+                );
+                return $user;
+            }
+        );
+        foreach ($users as $user) {
+            dispatch(
+                new ProcessNotificationEmail(
+                    $user, $user->notifications->map(
+                    function ($notification) {
+                        return $notification->location;
+                    }
+                )
+                )
+            );
+        }
     }
 }
