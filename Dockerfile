@@ -19,8 +19,6 @@ COPY --chown=www-data ./.env.$APP_ENV /web/.env
 
 COPY --chown=www-data ./server/deployed.sh /scripts/deployed.sh
 
-COPY --chown=www-data ./server/certs/$APP_ENV /config/ssl
-
 COPY --chown=www-data ./server/nginx-default.conf /config/
 
 RUN rm -f /web/.env.*
