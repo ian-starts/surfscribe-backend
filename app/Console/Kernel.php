@@ -25,6 +25,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        //tasks which only execute on production server
+        if(app()->environment('production')){
+            $schedule->command('surfscribe:check_forecasts')->dailyAt('24:00');
+        }
     }
 }
