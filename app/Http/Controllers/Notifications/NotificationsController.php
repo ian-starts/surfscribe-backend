@@ -16,7 +16,10 @@ use Webpatser\Uuid\Uuid;
 class NotificationsController extends BaseController
 {
     /**
+     * @param Request $request
      *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function add(Request $request)
     {
@@ -63,17 +66,24 @@ class NotificationsController extends BaseController
         return (new CamelCaseJsonResponseFactory)->json(['succes' => true, 'uuid' => $notification->uuid->string], 201);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function get(Request $request)
     {
         $page    = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = 15; // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
-        return new LengthAwarePaginator(
-            array_slice($request->auth->notifications->toArray(), $offset, $perPage, true),
-            count($request->auth->notifications),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
+        return (new CamelCaseJsonResponseFactory())->json(
+            new LengthAwarePaginator(
+                array_slice($request->auth->notifications->toArray(), $offset, $perPage, true),
+                count($request->auth->notifications),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            )
         );
     }
 
@@ -128,4 +138,5 @@ class NotificationsController extends BaseController
         $notification->forceDelete();
         return (new CamelCaseJsonResponseFactory)->json(['succes' => true], 200);
     }
+
 }
