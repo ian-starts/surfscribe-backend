@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Notifications;
 use App\Factories\CamelCaseJsonResponseFactory;
 use App\Location;
 use App\Notification;
+use App\Repositories\NotificationRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,7 +22,7 @@ class NotificationsController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function add(Request $request)
+    public function add(Request $request, NotificationRepository $repository)
     {
         $this->validate(
             $request,
@@ -39,7 +40,7 @@ class NotificationsController extends BaseController
                 'swell.period.max'                => 'required',
             ]
         );
-        $requestData  = $request->all();
+        $requestData  =  $repository->convertData($request->all());
         $notification = new Notification(
             [
 
@@ -87,7 +88,7 @@ class NotificationsController extends BaseController
         );
     }
 
-    public function edit($uuid, Notification $notification, Request $request)
+    public function edit($uuid, Notification $notification, Request $request, NotificationRepository $repository)
     {
         $notification = $notification->newQuery()->where(
             [['uuid', '=', $uuid], ['user_id', '=', $request->auth->id]]
@@ -107,7 +108,7 @@ class NotificationsController extends BaseController
                 'swell.period.max'                => 'required',
             ]
         );
-        $requestData = $request->all();
+        $requestData = $repository->convertData($request->all());
         $notification->fill(
             [
                 'wind_direction'             => $requestData['wind']['direction']['direction_string'],
