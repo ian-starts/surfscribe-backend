@@ -56,7 +56,6 @@ class Handler extends ExceptionHandler
         if ($parentRender instanceof JsonResponse) {
             return $parentRender;
         }
-        dd($exception);
         return (new CamelCaseJsonResponseFactory())->json(
             [
                 'message' => $exception instanceof HttpException || $exception instanceof ModelNotFoundException
