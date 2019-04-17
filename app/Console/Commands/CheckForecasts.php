@@ -8,8 +8,9 @@ use App\Jobs\ProcessNotificationEmail;
 use App\Location;
 use App\Notification;
 use App\Repositories\ForecastRepositoryAdapter;
+use App\Repositories\NotificationRepository;
+use App\Repositories\UserRepository;
 use App\User;
-use IanKok\MSWSDK\Forecasts\ForecastRepository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -40,52 +41,27 @@ class CheckForecasts extends Command
     }
 
     /**
-     * @param ForecastRepositoryAdapter $repository
+     * @param NotificationRepository $notificationRepository
+     * @param UserRepository         $userRepository
      */
-    public function handle(ForecastRepositoryAdapter $repository)
+    public function handle(NotificationRepository $notificationRepository, UserRepository $userRepository)
     {
-        $locations       = Location::query()->whereHas('notifications', null)->get();
+        $locations = Location::query()->whereHas('notifications', null)->get();
+
+        // Get all the notifications that have a forecast that matches the parameters
         $notifications   = $locations->map(
-            function ($location) use ($repository) {
-                $forecasts               = $repository->getBySlugAsync($location->msw_wave_break_slug)->wait();
-                $location->notifications = $location->notifications->filter(
-                    function ($notification) use ($forecasts, $repository) {
-                        $notification->forecasts = $repository->findNotifiableForecasts($notification, $forecasts);
-                        return (count($notification->forecasts) !== 0);
-                    }
-                );
-                return $location;
-            }
-        )->filter(
-            function ($location) {
-                return (!$location->notifications->isEmpty());
+            function ($location) use ($notificationRepository) {
+                return $notificationRepository->getPredictedByLocation($location);
             }
         )->reduce(
-            function (Collection $carry, Location $location) {
-                return $carry->merge($location->notifications);
+            function (Collection $carry, Collection $notifications) {
+                return $carry->merge($notifications);
             },
             new Collection()
         );
-        $notificationIds = $notifications->map(
-            function ($notification) {
-                return $notification->id;
-            }
-        );
-        $users           = User::query()->whereHas(
-            'notifications',
-            function (Builder $q) use ($notificationIds) {
-                $q->whereIn('id', $notificationIds);
-            }
-        )->get()->map(
-            function (User $user) use ($notifications) {
-                $user->notifications = $notifications->filter(
-                    function (Notification $notification) use ($user) {
-                        return $notification->user_id === $user->id;
-                    }
-                );
-                return $user;
-            }
-        );
+
+        $users = $userRepository->findByNotifications($notifications);
+        // Dispatch all emails
         foreach ($users as $user) {
             dispatch(
                 new ProcessNotificationEmail(

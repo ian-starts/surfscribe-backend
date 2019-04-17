@@ -479,7 +479,7 @@
                                                                     <tr>
                                                                         <td align="left" class="textContent">
                                                                             <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                                Some of your notifications went off. Check them in here.
+                                                                                We think you forgot your password... No worries, your board is more important anyway.
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -570,7 +570,7 @@
                                                                 <h1 style="color:#FFFFFF;line-height:100%;font-family:Helvetica,Arial,sans-serif;font-size:35px;font-weight:normal;margin-bottom:5px;text-align:center;">
                                                                     Hi {{ $user->name }}.</h1>
                                                                 <h2 style="text-align:center;font-weight:normal;font-family:Helvetica,Arial,sans-serif;font-size:23px;margin-bottom:0px;color:#205478;line-height:135%;">
-                                                                    Some of your notifications went off!</h2>
+                                                                    You can reset your password by pressing the button down below.</h2>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -587,7 +587,6 @@
                         </td>
                     </tr>
                     <!-- // MODULE ROW -->
-                    @foreach ($locations as $location)
 
                         <tr>
                             <td align="center" valign="top">
@@ -613,9 +612,8 @@
                                                                                 class="buttonContent"
                                                                                 style="padding-top:15px;padding-bottom:15px;padding-right:15px;padding-left:15px; background-color: #205478">
                                                                                 <a style="color:#FFFFFF;text-decoration:none;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:135%;"
-                                                                                   href="https://www.surfscribe.me/{{$location->slug}}"
-                                                                                   target="_blank">See {{$location->wave_break}}
-                                                                                    forecast!</a>
+                                                                                   href="{{$url}}"
+                                                                                   target="_blank">Reset your password</a>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -634,7 +632,6 @@
                                 <!-- // CENTERING TABLE -->
                             </td>
                         </tr>
-                    @endforeach
 
                 </table>
                 <!-- // END -->

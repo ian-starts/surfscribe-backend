@@ -4,10 +4,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Factories\CamelCaseJsonResponseFactory;
+use App\Mail\MailNotifications;
+use App\Mail\MailPasswordReset;
+use App\PasswordReset;
+use App\Repositories\PasswordResetRepository;
+use App\Repositories\UserRepository;
 use App\User;
 use Illuminate\Http\Request;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class AuthController extends BaseController
@@ -105,5 +111,74 @@ class AuthController extends BaseController
             ],
             200
         );
+    }
+
+    /**
+     * @param Request        $request
+     * @param UserRepository $repository
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function checkToken(Request $request, UserRepository $repository)
+    {
+        $user = $repository->getByTokenAndEmail($request->get('token', null), $request->get('email', null));
+        if ($user instanceof User) {
+            return response()->json(['success' => true, 'message' => 'User can reset password'], 200);
+        }
+        return response()->json(
+            ['success' => false, 'message' => 'User not authorized for password reset'],
+            200
+        );
+    }
+
+    /**
+     * @param Request        $request
+     * @param UserRepository $repository
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function requestPasswordReset(Request $request, UserRepository $repository)
+    {
+        $this->validate(
+            $request,
+            [
+                'email' => 'required|email'
+            ]
+        );
+        $user = User::query()->where('email', '=', $request->get('email'))->firstOrFail();
+        $repository->createPasswordReset($user);
+        return response()->json(['success' => true, 'message' => 'Reset token requested'], 201);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function resetPassword(Request $request, UserRepository $repository)
+    {
+        $this->validate(
+            $request,
+            [
+                'email'    => 'required|email',
+                'token'    => 'required',
+                'password' => 'required',
+            ]
+        );
+        $user = $repository->getByTokenAndEmail($request->get('token', null), $request->get('email', null));
+        if (!($user instanceof User)) {
+            return response()->json(
+                ['success' => false, 'message' => 'User not authorized for password reset'],
+                403
+            );
+        }
+        $user->password           = Hash::make($request->get('password'));
+        $user->reset_token        = null;
+        $user->token_requested_at = null;
+        $user->save();
+        return response()->json(['success' => true, 'message' => 'password changed']);
     }
 }
