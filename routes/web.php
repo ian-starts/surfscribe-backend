@@ -38,7 +38,7 @@ $router->group(
         $router->put('notifications/{uuid}', 'Notifications\NotificationsController@edit');
         $router->get('notifications', 'Notifications\NotificationsController@get');
         $router->delete('notifications/{uuid}', 'Notifications\NotificationsController@delete');
-
+        $router->put('/auth/user', 'Auth\AuthController@editUser');
         $router->get(
             'auth/user',
             function ($request) {

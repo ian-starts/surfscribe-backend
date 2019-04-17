@@ -181,4 +181,26 @@ class AuthController extends BaseController
         $user->save();
         return response()->json(['success' => true, 'message' => 'password changed']);
     }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function editUser(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'email' => 'required|email',
+                'name'  => 'required'
+            ]
+        );
+        $user = $request->auth;
+        $user->email = $request->get('email', null);
+        $user->name = $request->get('name', null);
+        $user->save();
+        return response()->json(['success' => true, 'message' => 'User updated']);
+    }
 }
