@@ -1,7 +1,7 @@
 steps:
-  - name: 'gcr.io/$PROJECT_ID/composer'
-    id: 'install'
-    args: ['install', '--no-dev', '--optimize-autoloader', '--no-interaction', '--no-scripts']
+  - name: 'dutchandbold/laravel-docker'
+    id: 'install composer deps'
+    args: ['composer', 'install', '--no-dev', '--optimize-autoloader', '--no-interaction', '--no-scripts']
     waitFor: ['-']
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build docker image'
