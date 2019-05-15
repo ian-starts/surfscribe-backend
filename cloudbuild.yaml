@@ -10,10 +10,15 @@ steps:
     id: 'push docker image'
     args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: 'create new template'
-    args: ['compute','instance-templates', 'create-with-container', 'surfscribe-backend-$COMMIT_SHA',
-           '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA',
-            '--machine-type=f1-micro']
-  - name: 'gcr.io/cloud-builders/gcloud'
-    id: 'execute rolling update'
-    args: ['compute', 'instance-groups', 'managed', 'rolling-action', 'start-update' , 'surfscribe-instance-group', '--version', 'template=surfscribe-backend-$COMMIT_SHA', '--zone', 'us-east1-b']
+    id: 'update image'
+    args: ['compute','instances', 'update-container', 'surfscribe-instance',
+           '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#      id: 'create new template'
+#      args: ['compute','instance-templates', 'create-with-container', 'surfscribe-backend-$COMMIT_SHA',
+#             '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA',
+#             '--machine-type=f1-micro']
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    id: 'execute rolling update'
+#    args: ['compute', 'instance-groups', 'managed', 'rolling-action', 'start-update' , 'surfscribe-instance-group',
+#           '--version', 'template=surfscribe-backend-$COMMIT_SHA', '--zone', 'us-east1-b']
