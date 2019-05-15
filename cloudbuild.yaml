@@ -9,13 +9,9 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'push docker image'
     args: ['push', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
-#  - name: 'gcr.io/cloud-builders/kubectl'
-#    id: 'deploy to kubernetes'
-#    args:
-#      - 'set'
-#      - 'image'
-#      - 'deployment/surfscribe-pod'
-#      - 'surfscribe-pod=gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA'
-#    env:
-#      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
-#      - 'CLOUDSDK_CONTAINER_CLUSTER=surfscribe-cluster'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'create new template'
+    args: ['compute','instance-templates', 'create-with-container', 'surfscribe-backend:$COMMIT_SHA', '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'execute rolling update'
+    args: ['compute', 'instance-groups', 'managed', 'rolling-action', 'start-update' , 'surfscribe-instance-group', '--version', 'template=surfscribe-backend:$COMMIT_SHA', '--zone us-east1-b']
