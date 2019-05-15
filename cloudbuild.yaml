@@ -12,7 +12,8 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'update image'
     args: ['compute','instances', 'update-container', 'surfscribe-instance',
-           '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA']
+           '--container-image', 'gcr.io/surfscribe/github.com/ian-starts/surfscribe-backend:$COMMIT_SHA',
+          '--zone', 'us-east1-b']
 #  - name: 'gcr.io/cloud-builders/gcloud'
 #      id: 'create new template'
 #      args: ['compute','instance-templates', 'create-with-container', 'surfscribe-backend-$COMMIT_SHA',
