@@ -1,0 +1,33 @@
+version: '3.4'
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: forge
+      MYSQL_USER: forge
+      MYSQL_PASSWORD: WZvEg2VM6bBF6x8ThME6mzHm
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+  cache:
+    image: redis
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+networks:
+  backend:
+    external: true
+volumes:
+  mysql-data:
+  sessions:

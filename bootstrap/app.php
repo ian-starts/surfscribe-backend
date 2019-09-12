@@ -75,9 +75,10 @@ $app->routeMiddleware(['cache' => \Barryvdh\HttpCache\Middleware\CacheRequests::
 |
 */
 //$app->register(\App\Providers\AppServiceProvider::class);
-$app->register(\IanKok\MSWSDK\MSWSDKServiceProvider::class);
-$app->register(\Barryvdh\HttpCache\ServiceProvider::class);
-$app->register(\Illuminate\Mail\MailServiceProvider::class);
+$app->register(IanKok\MSWSDK\MSWSDKServiceProvider::class);
+$app->register(Barryvdh\HttpCache\ServiceProvider::class);
+$app->register(Illuminate\Mail\MailServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

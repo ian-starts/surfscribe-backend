@@ -11,10 +11,12 @@
         "iankok/msw-sdk": "^1.0",
         "iankok/surf-forecast-api-client": "^1.0",
         "illuminate/mail": "^5.8",
+        "illuminate/redis": "^5.8",
         "laravel/lumen-framework": "5.8.*",
+        "litipk/php-bignumbers": "^0.8",
+        "predis/predis": "^1.1",
         "vlucas/phpdotenv": "^3.3",
-        "webpatser/laravel-uuid": "2.*",
-        "litipk/php-bignumbers": "^0.8"
+        "webpatser/laravel-uuid": "2.*"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",

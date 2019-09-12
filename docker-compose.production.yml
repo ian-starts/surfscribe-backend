@@ -1,0 +1,41 @@
+version: '3.4'
+services:
+  app:
+    image: yikdev/surfscribe-backend:v1.0.4
+    volumes:
+      - sessions:/web/storage/framework/sessions
+    environment:
+      WORKER_NUMPROCS: 1
+      QUEUE_DRIVER: redis
+      APP_KEY: base64:jytB6eTFbQq5LvV1dBIksIYvLpggSwJP3HiLO6fuQTA=
+      APP_TIMEZONE: UTC
+      DB_HOST: db
+      DB_USER: forge
+      DB_DATABASE: forge
+      DB_PASSWORD: WZvEg2VM6bBF6x8ThME6mzHm
+      REDIS_HOST: cache
+    depends_on:
+      - db
+      - cache
+    networks:
+      - traefik-net
+      - backend
+    deploy:
+      replicas: 2
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.backend.loadbalancer.sticky=false"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.basic.frontend.rule=Host: iankok.com, www.iankok.com;PathPrefix: /api/"
+        - "traefik.basic.port=3000"
+        - "traefik.basic.protocol=http"
+networks:
+  traefik-net:
+    external: true
+  backend:
+    external: true
+volumes:
+  mysql-data:
+    driver: hetzner
+  sessions:
